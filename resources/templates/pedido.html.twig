@@ -1,0 +1,41 @@
+{% extends 'layout.html.twig' %}
+
+{% set active = 'pedido' %}
+
+{% block content %}
+    <h1>{{ 'pedido'|trans }}</h1>
+      <a href="{{url('pedido_add')}}">
+        <button type="button" class="btn btn-success">
+          <span class="glyphicon glyphicon-plus"></span> Adicionar Novo
+        </button>
+      </a>
+    <div class="panel panel-default" style="margin-top:16px">
+    
+      <div class="panel-heading">Abaixo a lista de pedido cadastrados</div>
+        <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>id_cliente</th>
+            <th>mensagem</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for pedido in dados %}
+          <tr>
+            <th scope="row">{{pedido.id_pedido}}</th>
+            <td>{{pedido.id_cliente}}</td>
+            <td>{{pedido.mensagem}}</td>
+            <td>
+              <button class="glyphicon glyphicon-pencil" title="Editar" onclick="location.href='{{path('pedido_add')}}/{{pedido.id_pedido}}'" style="cursor:pointer"></button>
+              <button class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Excluir" 
+                onclick="if (confirm('Tem certeza que deseja excluir {{pedido.id_pedido}}?')) location.href='{{path('pedido_remove')}}/{{pedido.id_pedido}}';" style="cursor:pointer">
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+{% endblock %}

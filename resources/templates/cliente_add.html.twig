@@ -1,0 +1,13 @@
+{% extends 'layout.html.twig' %}
+
+{% set active = 'cliente' %}
+
+{% block content %}
+    <h1>{{ 'Adicionar Cliente'|trans }}</h1>
+    <a href="{{url('cliente')}}">
+      <button type="button" class="btn btn-info" style="margin-bottom:16px;">
+        <span class="glyphicon glyphicon glyphicon-arrow-left"></span> Voltar
+      </button>
+    </a>
+    {{ form(form, { attr: { novalidate: true } }) }}
+{% endblock %}
