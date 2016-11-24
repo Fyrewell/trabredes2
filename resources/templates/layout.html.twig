@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Controle de Presença</title>
+    <title>Pedido Pizza</title>
 
-    <link href="/trabredes/resources/others_front/bootstrap.min.css" rel="stylesheet">
+    <link href="/trabredes2/resources/others_front/bootstrap.min.css" rel="stylesheet">
 
   </head>
   <body>
@@ -19,29 +19,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{ url('homepage') }}">Controle de Presença</a>
+          <a class="navbar-brand" href="{{ url('homepage') }}">Pedido Pizza</a>
           </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li {% if 'homepage' == active %}class="active"{% endif %}><a href="{{ url('homepage') }}">{{ 'Home' }}</a></li>
-            <li {% if 'alunos' == active %}class="active"{% endif %}><a href="{{ url('alunos') }}">Alunos</a></li>
-            <li {% if 'disciplinas' == active %}class="active"{% endif %}><a href="{{ url('disciplinas') }}">Disciplinas</a></li>
-            <li {% if 'matricula_aluno' == active %}class="active"{% endif %}><a href="{{ url('matricula_aluno') }}">Matrícula Aluno</a></li>
-            <li {% if 'registro_presenca' == active %}class="active"{% endif %}><a href="{{ url('registro_presenca') }}">Registro de Presenças</a></li>
-            <!--
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                {% if is_granted('ROLE_USER') %}
-                  <li><a href="{{ path('logout') }}">{{ 'Sair' }}</a></li>
-                {% else %}
-                  <li><a href="{{ path('login') }}">{{ 'Entrar' }}</a></li>
-                  <li><a href="#">{{ 'Register'|trans }}</a></li>
-                {% endif %}
-              </ul>
-            </li>
-            -->
+            <li {% if 'cliente' == active %}class="active"{% endif %}><a href="{{ url('cliente') }}">cliente</a></li>
+            <li {% if 'pedido' == active %}class="active"{% endif %}><a href="{{ url('pedido') }}">pedido</a></li>
           </ul>
         </div>
       </div>
