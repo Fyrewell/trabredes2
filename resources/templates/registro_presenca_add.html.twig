@@ -1,0 +1,13 @@
+{% extends 'layout.html.twig' %}
+
+{% set active = 'registro_presenca' %}
+
+{% block content %}
+    <h1>{{ 'Registro de presença'|trans }}</h1>
+    <a href="{{url('registro_presenca')}}">
+      <button type="button" class="btn btn-info" style="margin-bottom:16px;">
+        <span class="glyphicon glyphicon glyphicon-arrow-left"></span> Voltar
+      </button>
+    </a>
+    {{ form(form, { attr: { novalidate: true } }) }}
+{% endblock %}
