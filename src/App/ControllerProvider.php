@@ -28,10 +28,6 @@ class ControllerProvider implements ControllerProviderInterface
             ->bind('homepage');
 
         $controllers
-            ->get('/login', [$this, 'login'])
-            ->bind('login');
-
-        $controllers
             ->get('/cliente', [$this, 'cliente'])
             ->bind('cliente');
         $controllers
@@ -72,29 +68,14 @@ class ControllerProvider implements ControllerProviderInterface
             ->bind('pedido_remove/{id}');
           
         $controllers
-            ->get('/doctrine', [$this, 'doctrine'])
-            ->bind('doctrine');
+            ->post('/pedido_add', [$this, 'pedido_add_arduino']);
+          
         return $controllers;
     }
 
     public function homepage(App $app)
     {
         return $app['twig']->render('index.html.twig');
-    }
-
-    public function login(App $app)
-    {
-        return $app['twig']->render('login.html.twig', array(
-            'error' => $app['security.utils']->getLastAuthenticationError(),
-            'username' => $app['security.utils']->getLastUsername(),
-        ));
-    }
-
-    public function doctrine(App $app)
-    {
-        return $app['twig']->render('doctrine.html.twig', array(
-            'posts' => $app['db']->fetchAll('SELECT * FROM post'),
-        ));
     }
 
     public function cliente(App $app, Request $request)
@@ -149,13 +130,6 @@ class ControllerProvider implements ControllerProviderInterface
       $app['db']->delete("cliente", ['id_cliente'=>$id]);
       return $app->redirect('../../cliente');
     }
-    
-    public function disciplinas(App $app, Request $request)
-    {
-      return $app['twig']->render('disciplinas.html.twig', array(
-            'dados' => $app['db']->fetchAll('SELECT * FROM disciplina')
-        ));
-    }
 
     public function pedido(App $app, Request $request)
     {
@@ -166,7 +140,7 @@ class ControllerProvider implements ControllerProviderInterface
     
     public function pedido_add(App $app, Request $request, $id=0)
     {
-      $dados = ['id_pedido'=>'','id_cliente'=>'','mensagem'=>''];
+      $dados = ['id_pedido'=>'','id_cliente'=>'','mensagem'=>'', 'data_hora'=>''];
       if (!empty($id)){
         $dados = $app['db']->fetchAssoc('SELECT * FROM pedido WHERE id_pedido = ?', [$id]);
       }
@@ -176,16 +150,17 @@ class ControllerProvider implements ControllerProviderInterface
             ->add('id', 'text', array('disabled' => true, 'attr' => array('placeholder' => 'id_pedido', 'value' => $dados['id_pedido'])))
             ->add('id_cliente', 'text', array('constraints' => new Assert\NotBlank(), 'attr' => array('placeholder' => 'id_cliente', 'value' => $dados['id_cliente'])))
             ->add('mensagem', 'text', array('constraints' => new Assert\NotBlank(), 'attr' => array('placeholder' => 'mensagem', 'value' => $dados['mensagem'])))
+            ->add('data_hora', 'text', array('constraints' => new Assert\NotBlank(), 'attr' => array('placeholder' => 'data_hora', 'value' => $dados['data_hora'])))
             ->add('submit', 'submit')
             ->getForm()
         ;
         if ($form->handleRequest($request)->isSubmitted()) {
             if ($form->isValid()) {
                 if (empty($id)){
-                  $app['db']->insert('pedido', ['id_cliente' => $_POST['form']['id_cliente'],'mensagem'=>$_POST['form']['mensagem']]);
+                  $app['db']->insert('pedido', ['id_cliente' => $_POST['form']['id_cliente'],'mensagem'=>$_POST['form']['mensagem'],'data_hora'=>$_POST['form']['data_hora']]);
                 }else{
-                  $sql = "UPDATE pedido SET id_cliente = ?, mensagem = ?";
-                  $app['db']->executeUpdate($sql, [$_POST['form']['id_cliente'],$_POST['form']['mensagem'], $id]);
+                  $sql = "UPDATE pedido SET id_cliente = ?, mensagem = ?, data_hora = ?";
+                  $app['db']->executeUpdate($sql, [$_POST['form']['id_cliente'],$_POST['form']['mensagem'],$_POST['form']['data_hora'], $id]);
                 }
                 $app['session']->getFlashBag()->add('success', 'Operação realizada com sucesso');
             } else {
@@ -199,109 +174,30 @@ class ControllerProvider implements ControllerProviderInterface
         ));
     }
     
+    
+    public function pedido_add_arduino(App $app, Request $request)
+    {
+      $dt = date("Y-m-d H:i:s");
+      $dados = $app['db']->fetchAssoc("SELECT * FROM cliente
+                WHERE fone = ? ", [$_POST['numero']]);
+
+      if (count($dados)>1){
+        try{
+            $app['db']->insert('pedido', ['id_cliente' => $dados['id_cliente'], 'data_hora' => $dt, 'mensagem' => $_POST['MSG_Texto']]);
+            return new Response('ok');
+          }catch(\Exception $e){
+            return new Response('error');
+          }
+        return new Response('ok');
+      }else
+        return new Response('nok');
+    }
+    
+    
     public function pedido_remove(App $app, Request $request, $id=0)
     {
       $app['db']->delete("pedido", ['id_pedido'=>$id]);
       return $app->redirect('../../pedido');
-    }
-    
-    public function form(App $app, Request $request)
-    {
-        $builder = $app['form.factory']->createBuilder('form');
-
-        $choices = array('choice a', 'choice b', 'choice c');
-
-        $form = $builder
-            ->add(
-                $builder->create('sub-form', 'form')
-                    ->add('subformemail1', 'email', array(
-                        'constraints' => array(new Assert\NotBlank(), new Assert\Email()),
-                        'attr' => array('placeholder' => 'email constraints'),
-                        'label' => 'A custom label : ',
-                    ))
-                    ->add('subformtext1', 'text')
-            )
-            ->add('text1', 'text', array(
-                'constraints' => new Assert\NotBlank(),
-                'attr' => array('placeholder' => 'not blank constraints'),
-            ))
-            ->add('text2', 'text', array('attr' => array('class' => 'span1', 'placeholder' => '.span1')))
-            ->add('text3', 'text', array('attr' => array('class' => 'span2', 'placeholder' => '.span2')))
-            ->add('text4', 'text', array('attr' => array('class' => 'span3', 'placeholder' => '.span3')))
-            ->add('text5', 'text', array('attr' => array('class' => 'span4', 'placeholder' => '.span4')))
-            ->add('text6', 'text', array('attr' => array('class' => 'span5', 'placeholder' => '.span5')))
-            ->add('text8', 'text', array('disabled' => true, 'attr' => array('placeholder' => 'disabled field')))
-            ->add('textarea', 'textarea')
-            ->add('email', 'email')
-            ->add('integer', 'integer')
-            ->add('money', 'money')
-            ->add('number', 'number')
-            ->add('password', 'password')
-            ->add('percent', 'percent')
-            ->add('search', 'search')
-            ->add('url', 'url')
-            ->add('choice1', 'choice', array(
-                'choices' => $choices,
-                'multiple' => true,
-                'expanded' => true,
-            ))
-            ->add('choice2', 'choice', array(
-                'choices' => $choices,
-                'multiple' => false,
-                'expanded' => true,
-            ))
-            ->add('choice3', 'choice', array(
-                'choices' => $choices,
-                'multiple' => true,
-                'expanded' => false,
-            ))
-            ->add('choice4', 'choice', array(
-                'choices' => $choices,
-                'multiple' => false,
-                'expanded' => false,
-            ))
-            ->add('country', 'country')
-            ->add('language', 'language')
-            ->add('locale', 'locale')
-            ->add('timezone', 'timezone')
-            ->add('date', 'date')
-            ->add('datetime', 'datetime')
-            ->add('time', 'time')
-            ->add('birthday', 'birthday')
-            ->add('checkbox', 'checkbox')
-            ->add('file', 'file')
-            ->add('radio', 'radio')
-            ->add('password_repeated', 'repeated', array(
-                'type' => 'password',
-                'invalid_message' => 'The password fields must match.',
-                'options' => array('required' => true),
-                'first_options' => array('label' => 'Password'),
-                'second_options' => array('label' => 'Repeat Password'),
-            ))
-            ->add('submit', 'submit')
-            ->getForm()
-        ;
-
-        if ($form->handleRequest($request)->isSubmitted()) {
-            if ($form->isValid()) {
-                $app['session']->getFlashBag()->add('success', 'The form is valid');
-            } else {
-                $form->addError(new FormError('This is a global error'));
-                $app['session']->getFlashBag()->add('info', 'The form is bound, but not valid');
-            }
-        }
-
-        return $app['twig']->render('form.html.twig', array(
-            'form' => $form->createView(),
-        ));
-    }
-
-    public function cache(App $app)
-    {
-        $response = new Response($app['twig']->render('cache.html.twig', array('date' => date('Y-M-d h:i:s'))));
-        $response->setTtl(10);
-
-        return $response;
     }
 
     public function error(\Exception $e, $code)

@@ -18,6 +18,7 @@
             <th>#</th>
             <th>id_cliente</th>
             <th>mensagem</th>
+            <th>data hora</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -27,6 +28,7 @@
             <th scope="row">{{pedido.id_pedido}}</th>
             <td>{{pedido.id_cliente}}</td>
             <td>{{pedido.mensagem}}</td>
+            <td>{{pedido.data_hora}}</td>
             <td>
               <button class="glyphicon glyphicon-pencil" title="Editar" onclick="location.href='{{path('pedido_add')}}/{{pedido.id_pedido}}'" style="cursor:pointer"></button>
               <button class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Excluir" 

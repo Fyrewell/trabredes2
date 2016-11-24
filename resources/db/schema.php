@@ -13,6 +13,7 @@ $pedido = $schema->createTable('pedido');
 $pedido->addColumn('id_pedido', 'integer', array('unsigned' => true, 'autoincrement' => true));
 $pedido->addColumn('id_cliente', 'integer');
 $pedido->addColumn('mensagem', 'string', array('length' => 200));
+$pedido->addColumn('data_hora', 'datetime', array('notnull' => false));
 $pedido->setPrimaryKey(array('id_pedido'));
 
 return $schema;
