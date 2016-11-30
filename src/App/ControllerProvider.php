@@ -55,8 +55,6 @@ class ControllerProvider implements ControllerProviderInterface
             ->bind('pedido_add/{id}');
         $controllers
             ->post('/pedido/add', [$this, 'pedido_add']);
-         $controllers
-            ->post('/pedido_add_arduino', [$this, 'pedido_add_arduino']);
         $controllers
             ->post('/pedido/add/{id}', [$this, 'pedido_add']);
         $controllers
